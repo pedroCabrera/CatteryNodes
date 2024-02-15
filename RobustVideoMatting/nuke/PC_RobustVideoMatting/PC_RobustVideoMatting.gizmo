@@ -1,0 +1,62 @@
+Gizmo {
+ onCreate "import sys\nthis = nuke.thisNode()\ninference = nuke.toNode(f\"\{this.name()\}.Inference1\")\nthis\[\"gpuName\"].setValue(inference\[\"gpuName\"].value())\nthis\[\"channelsIn\"].setValue(\"rgba.red, rgba.green, rgba.blue\")\ninference.forceValidate()\nis_enabled = inference\[\"modelFile\"].enabled()\nif (sys.platform.lower() == \"darwin\") and (not inference\[\"useGPUIfAvailable\"].enabled()): this\[\"useGPUIfAvailable\"].setValue(False), this\[\"useGPUIfAvailable\"].setEnabled(False)\nif not is_enabled:\n    for k in this.knobs(): this\[k].setEnabled(False)\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].enabled())"
+ onDestroy "nuke.thisNode()\[\"knobChanged\"].setValue(\"\")"
+ knobChanged "this = nuke.thisNode()\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].value())"
+ addUserKnob {20 Parameters}
+ addUserKnob {26 localGPU l "Local GPU:" T ""}
+ addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA GeForce RTX 3090"}
+ addUserKnob {6 useGPUIfAvailable l "Use GPU if available" t "Select this to render on the <b>Local GPU</b>, if available.\n\nYou can select this even if no GPU is currently available on your machine. The GPU will then be used whenever the script is opened on a machine which does have a GPU available. You should also select this if you wish to render from the command line with the <b>--gpu</b> option.\n\nIf this node requires full frames from its inputs, and is therefore unable to reduce its memory overhead, it will fall back to the CPU if an attempt to render a frame on the GPU fails due to lack of memory. When this occurs, a warning message will be printed to the console." +STARTLINE}
+ useGPUIfAvailable true
+ addUserKnob {6 halfPrecision l "Optimize for Speed and Memory" t "Whether to process at half float precision. This speeds up execution and enables the processing of larger images, however there is the risk of artifacts with some trained models." +STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {26 channelsIn l "Channels In:" T "rgba.red, rgba.green, rgba.blue"}
+ addUserKnob {6 reset +STARTLINE}
+ reset true
+ addUserKnob {4 model M {rvm_mobilenetv3 rvm_resnet50}}
+ addUserKnob {7 downsampleRatio l "Downsample Ratio" R 0.1 1}
+ downsampleRatio 0.25
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {20 DOC n 1}
+ addUserKnob {26 text l "" +STARTLINE T "The reset Parameter controls if recurrent states are reused or not, the model is suposed to reuse previous states to improve the mate.\nIf the reset is off, the previous frames are not taken into acount\nIf is on, previous computed frame state is used for computing new frame, its suposed to be keyed at first frame ON and then at second frame OFF.\nTake in to acount that the previous computed frame might not be the previous frame in the sequence if you are jumping in the timeline and can get undesired results if reset is off.\nAlso, if you change the input ( diferent plate, resolution, etc ) , make sure to check the reset, and then check/uncheck based on your preferences ( normally keying first frame as mentioned ), you will get a error otherwise.\n\nThe table provides a general guideline. Please adjust based on your video content.\n\n\n  Resolution   -----    Portrait    ----   Full-Body\n<=512x512    ----        1         ----        1 \n  1280x720     ----      0.375     ----       0.6 \n1920x1080     ----      0.25       ----       0.4 \n3840x2160     ----      0.125     ----       0.2\n\n\nInternally, the model resizes dowan the input for stage 1. Then, it refines at high-resolution for stage 2.\n\nSet downsample_ratio so that the downsampled resolution is between 256 and 512.\n\nFor example, for 1920x1080 input with downsample_ratio=0.25, the resized resolution 480x270 is between 256 and 512.\n\nAdjust downsample_ratio base on the video content. If the shot is portrait, a lower downsample_ratio is sufficient. If the shot contains the full human body, use high downsample_ratio.\n\nNote that higher downsample_ratio is not always better."}
+ addUserKnob {20 endGroup n -1} 
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos -256
+  ypos -297
+ }
+set Ne7d89800 [stack 0]
+ Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable}}
+  modelFile "\[lsearch -inline \[plugins -all rvm_resnet50.cat] *.cat]"
+  halfPrecision {{parent.halfPrecision}}  
+  serialiseKnob {downsample_ratio:{parent.downsampleRatio};reset:{parent.reset};}
+  name Inference2
+  xpos -162
+  ypos -204
+ }
+push $Ne7d89800
+ Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable}}    
+  modelFile "\[lsearch -inline \[plugins -all rvm_mobilenetv3.cat] *.cat]"
+  halfPrecision {{parent.halfPrecision}}  
+  serialiseKnob {downsample_ratio:{parent.downsampleRatio};reset:{parent.reset};}
+  name Inference1
+  selected true
+  xpos -317
+  ypos -199
+ }
+ Switch {
+  inputs 2
+  which {{parent.model}}
+  name Switch1
+  xpos -250
+  ypos -118
+ }
+ Output {
+  name Output1
+  xpos -250
+  ypos -10
+ }
+end_group

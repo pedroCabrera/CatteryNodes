@@ -1,0 +1,13 @@
+{
+  "minimum_nuke_version_required": 13.1,
+  "version": 1,
+  "category": "PC_Tools/Segmentation",
+  "description": "RobustVideoMatting",
+  "cats": [
+      {
+          "filepath": "PC_RobustVideoMatting.gizmo",
+          "name": "PC_RobustVideoMatting",
+          "icon": "PC_RobustVideoMatting.png"
+      }
+  ]
+}

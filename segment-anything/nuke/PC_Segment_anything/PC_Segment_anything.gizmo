@@ -1,0 +1,59 @@
+version 13.1 v1
+Gizmo {
+ onCreate "import sys\nthis = nuke.thisNode()\ninference = nuke.toNode(f\"\{this.name()\}.Inference1\")\nthis\[\"gpuName\"].setValue(inference\[\"gpuName\"].value())\nthis\[\"channelsIn\"].setValue(\"rgba.red, rgba.green, rgba.blue\")\ninference.forceValidate()\nis_enabled = inference\[\"modelFile\"].enabled()\nif (sys.platform.lower() == \"darwin\") and (not inference\[\"useGPUIfAvailable\"].enabled()): this\[\"useGPUIfAvailable\"].setValue(False), this\[\"useGPUIfAvailable\"].setEnabled(False)\nif not is_enabled:\n    for k in this.knobs(): this\[k].setEnabled(False)\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].enabled())"
+ onDestroy "nuke.thisNode()\[\"knobChanged\"].setValue(\"\")"
+ knobChanged "this = nuke.thisNode()\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].value())\nthis.node(\"Inference2\").knob(\"position\").setExpression(\"\{\}.position\".format(this.name()))\nthis.node(\"Inference1\").knob(\"position\").setExpression(\"\{\}.position\".format(this.name()))"
+ addUserKnob {20 Parameters}
+ addUserKnob {26 localGPU l "Local GPU:" T ""}
+ addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA GeForce RTX 3090"}
+ addUserKnob {6 useGPUIfAvailable l "Use GPU if available" t "Select this to render on the <b>Local GPU</b>, if available.\n\nYou can select this even if no GPU is currently available on your machine. The GPU will then be used whenever the script is opened on a machine which does have a GPU available. You should also select this if you wish to render from the command line with the <b>--gpu</b> option.\n\nIf this node requires full frames from its inputs, and is therefore unable to reduce its memory overhead, it will fall back to the CPU if an attempt to render a frame on the GPU fails due to lack of memory. When this occurs, a warning message will be printed to the console." +STARTLINE}
+ useGPUIfAvailable true
+ addUserKnob {6 halfPrecision l "Optimize for Speed and Memory" t "Whether to process at half float precision. This speeds up execution and enables the processing of larger images, however there is the risk of artifacts with some trained models." +STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {26 channelsIn l "Channels In:" T "rgba.red, rgba.green, rgba.blue"}
+ addUserKnob {26 ""}
+ addUserKnob {4 modelSize l "Model Size" M {Base Large}}
+ modelSize Large
+ addUserKnob {12 position}
+ position {822 621}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos -148
+  ypos 59
+ }
+set N8dc6d000 [stack 0]
+ Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable}}
+  modelFile "\[lsearch -inline \[plugins -all sam_vit_l.cat] *.cat]"
+  halfPrecision {{parent.halfPrecision}}
+  serialiseKnob {position:{Group3.position} {Group3.position};}
+  name Inference2
+  selected true
+  xpos -61
+  ypos 205
+ }
+push $N8dc6d000
+ Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable}}
+  modelFile "\[lsearch -inline \[plugins -all sam_vit_b.cat] *.cat]"
+  halfPrecision {{parent.halfPrecision}}
+  serialiseKnob {position:{Group3.position x1 538} {Group3.position x1 496};}
+  name Inference1
+  xpos -242
+  ypos 206
+ }
+ Switch {
+  inputs 2
+  which {{parent.modelSize}}
+  name Switch1
+  xpos -150
+  ypos 306
+ }
+ Output {
+  name Output1
+  xpos -150
+  ypos 423
+ }
+end_group

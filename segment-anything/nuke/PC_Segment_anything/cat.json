@@ -1,0 +1,13 @@
+{
+  "minimum_nuke_version_required": 13.1,
+  "version": 1,
+  "category": "PC_Tools/Segmentation",
+  "description": "Segment Anything from Meta",
+  "cats": [
+      {
+          "filepath": "PC_Segment_anything.gizmo",
+          "name": "PC_Segment_anything",
+          "icon": "PC_Segment_anything.png"
+      }
+  ]
+}

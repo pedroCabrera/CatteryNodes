@@ -1,0 +1,224 @@
+#! C:/Program Files/Nuke14.0v5/nuke-14.0.5.dll -nx
+version 14.0 v5
+define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
+<layout version="1.0">
+    <window x="-1" y="-8" w="1920" h="1017" maximized="1" screen="0">
+        <splitter orientation="1">
+            <split size="40"/>
+            <dock id="" hideTitles="1" activePageId="Toolbar.1">
+                <page id="Toolbar.1"/>
+            </dock>
+            <split size="1262" stretch="1"/>
+            <splitter orientation="1">
+                <split size="987"/>
+                <dock id="" activePageId="DAG.1" focus="true">
+                    <page id="DAG.1"/>
+                    <page id="Curve Editor.1"/>
+                    <page id="DopeSheet.1"/>
+                    <page id="DAG.2"/>
+                    <page id="DAG.3"/>
+                </dock>
+                <split size="271"/>
+                <dock id="" activePageId="uk.co.thefoundry.scripteditor.2">
+                    <page id="uk.co.thefoundry.scripteditor.2"/>
+                </dock>
+            </splitter>
+            <split size="610"/>
+            <dock id="" activePageId="Properties.1">
+                <page id="Properties.1"/>
+                <page id="uk.co.thefoundry.backgroundrenderview.1"/>
+            </dock>
+        </splitter>
+    </window>
+    <window x="-1920" y="22" w="1918" h="1008" screen="1">
+        <splitter orientation="2">
+            <split size="1008"/>
+            <dock id="" activePageId="Viewer.1">
+                <page id="Viewer.2"/>
+                <page id="Viewer.1"/>
+            </dock>
+        </splitter>
+    </window>
+</layout>
+}
+Root {
+ inputs 0
+ name "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/CatFileCreators.nk"
+ frame 85
+ last_frame 3000
+ format "1920 1080 0 0 1920 1080 1 HD_1080"
+ proxy_type scale
+ proxy_format "1024 778 0 0 1024 778 1 1K_Super_35(full-ap)"
+ colorManagement Nuke
+ OCIO_config custom
+ customOCIOConfigPath "C:/Program Files/Nuke12.2v6/plugins/OCIOConfigs/configs/aces_1.1/config.ocio"
+ workingSpaceLUT linear
+ monitorLut sRGB
+ monitorOutLUT rec709
+ int8Lut sRGB
+ int16Lut sRGB
+ logLut Cineon
+ floatLut linear
+}
+BackdropNode {
+ inputs 0
+ name BackdropNode1
+ tile_color 0x388e8e00
+ note_font_size 42
+ xpos 277
+ ypos -251
+ bdwidth 358
+ bdheight 233
+}
+Read {
+ inputs 0
+ file_type mov
+ file "C:/Users/pedro/GoogleDrive/Mi unidad/BASURAS/VIDEOS/ANDRES_V3.mp4"
+ format "1920 1080 0 0 1920 1080 1 HD_1080"
+ last 366
+ origlast 366
+ origset true
+ colorspace linear
+ name Read2
+ xpos -431
+ ypos -185
+}
+Read {
+ inputs 0
+ file_type mov
+ file C:/Users/pedro/Desktop/TEST_FILES/VIDEO/ASU_104_022_0030_pararunaway_v002.mov
+ format "3840 2638 0 0 3840 2638 1 "
+ last 203
+ origlast 203
+ origset true
+ colorspace linear
+ name Read1
+ xpos -434
+ ypos -315
+}
+push 0
+Viewer {
+ inputs 3
+ frame_range 366-366
+ gamma 1.98
+ colour_sample_bbox {0.2354166657 -0.1291666627 0.2364583313 -0.128124997}
+ samplepoints {{0.2354166657 -0.1291666627}
+   }
+ gl_buffer_depth half-float
+ useGPUForViewer true
+ useGPUForInputs true
+ viewerProcess None
+ translate {-0.03749999404 -0.0270000007}
+ softSelect true
+ monitorOutOutputTransform rec709
+ name Viewer1
+ xpos 97
+ ypos 425
+ addUserKnob {20 viewerLockInputStates +INVISIBLE}
+ addUserKnob {26 READ_ME -STARTLINE +INVISIBLE T "The following knobs are needed for the Viewer Lock\nplugin to function. If you don't have Viewer Lock,\nyou can safely ignore or delete them.\n\nIf they're causing problems, let me know at\nmatt_roe@live.com.\n"}
+ addUserKnob {6 inputState0 +INVISIBLE +STARTLINE}
+ addUserKnob {6 inputState1 +INVISIBLE +STARTLINE}
+ addUserKnob {6 inputState2 +INVISIBLE +STARTLINE}
+ addUserKnob {6 inputState3 +INVISIBLE +STARTLINE}
+ addUserKnob {6 inputState4 +INVISIBLE +STARTLINE}
+ addUserKnob {6 inputState5 +INVISIBLE +STARTLINE}
+ addUserKnob {6 inputState6 +INVISIBLE +STARTLINE}
+ addUserKnob {6 inputState7 +INVISIBLE +STARTLINE}
+ addUserKnob {6 inputState8 +INVISIBLE +STARTLINE}
+ addUserKnob {6 inputState9 +INVISIBLE +STARTLINE}
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/segmentation_refinement/nuke/cascade_psp.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/segmentation_refinement/nuke/PC_Segmentation_Refinement/cascade_psp.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue,rgba.alpha
+ channelsOut rgba.red
+ modelId cascade_psp
+ name cascade_psp1
+ tile_color 0xff00ff
+ xpos 525
+ ypos -196
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {6 optimize_speed +STARTLINE}
+ addUserKnob {3 L}
+ L 900
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/rvm_mobilenetv3.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/PC_RobustVideoMatting/rvm_mobilenetv3.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red
+ modelId rvm_mobilenetv3
+ name rvm_mobilenetv
+ tile_color 0xff00ff
+ xpos 410
+ ypos -196
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {6 reset +STARTLINE}
+ reset true
+ addUserKnob {7 downsample_ratio}
+ downsample_ratio 0.25
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/rvm_resnet50.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/PC_RobustVideoMatting/rvm_resnet50.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red
+ modelId rvm_mobilenetv3
+ name rvm_resnet50
+ tile_color 0xff00ff
+ xpos 406
+ ypos -159
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {6 reset +STARTLINE}
+ reset true
+ addUserKnob {7 downsample_ratio}
+ downsample_ratio 0.25
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/sam_vit_b.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/PC_Segment_anything/sam_vit_b.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red,rgba.green,rgba.blue
+ modelId sam_vit_b
+ name sam_vit_b
+ xpos 290
+ ypos -199
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {12 position}
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/sam_vit_h.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/PC_Segment_anything/sam_vit_h.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red,rgba.green,rgba.blue
+ modelId sam_vit_h
+ name sam_vit_h
+ xpos 289
+ ypos -122
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {12 position}
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/sam_vit_l.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/PC_Segment_anything/sam_vit_l.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red,rgba.green,rgba.blue
+ modelId sam_vit_l
+ name sam_vit_l
+ xpos 289
+ ypos -159
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {12 position}
+}

@@ -1,0 +1,13 @@
+{
+  "minimum_nuke_version_required": 13.1,
+  "version": 1,
+  "category": "PC_Tools/Segmentation",
+  "description": "Mask Refinement",
+  "cats": [
+      {
+          "filepath": "PC_Segmentation_Refinement.gizmo",
+          "name": "PC_Segmentation_Refinement",
+          "icon": "PC_Segmentation_Refinement.png"
+      }
+  ]
+}

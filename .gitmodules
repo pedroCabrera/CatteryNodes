@@ -1,0 +1,9 @@
+[submodule "segmentation_refinement/CascadePSP"]
+	path = segmentation_refinement/CascadePSP
+	url = https://github.com/pedroCabrera/CascadePSP
+[submodule "RobustVideoMatting/RobustVideoMatting"]
+	path = RobustVideoMatting/RobustVideoMatting
+	url = https://github.com/PeterL1n/RobustVideoMatting
+[submodule "segment-anything/segment-anything"]
+	path = segment-anything/segment-anything
+	url = https://github.com/facebookresearch/segment-anything

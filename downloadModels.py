@@ -8,9 +8,13 @@ filename2 = "RobustVideoMatting/pretrained/rvm_resnet50.pth"
 
 for url, filename in zip([url1, url2], [filename1, filename2]):
     if not os.path.exists(filename):
+        if not os.path.exists(os.path.dirname(filename)):
+            os.makedirs(os.path.dirname(filename))
         print(f"Downloading {filename}")  
         urlretrieve(url, filename)
         print(f"Downloaded {filename}")  
+    else:
+        print(f"{filename} already exists")
 
 # Segment anything Weights
 url1 = (r"https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth")
@@ -22,6 +26,10 @@ filename3 = "segment-anything/pretrained/sam_vit_b.pth"
 
 for url, filename in zip([url1, url2, url3], [filename1, filename2, filename3]):
     if not os.path.exists(filename):
+        if not os.path.exists(os.path.dirname(filename)):
+            os.makedirs(os.path.dirname(filename))        
         print(f"Downloading {filename}")  
         urlretrieve(url, filename)
-        print(f"Downloaded {filename}")    
+        print(f"Downloaded {filename}")  
+    else:
+        print(f"{filename} already exists")          

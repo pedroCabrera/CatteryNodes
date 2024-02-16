@@ -5,9 +5,9 @@
   "description": "PC_SemanticGuidedHumanMatting",
   "cats": [
       {
-          "filepath": "PC_PC_SemanticGuidedHumanMatting.gizmo",
-          "name": "PC_PC_SemanticGuidedHumanMatting",
-          "icon": "PC_PC_SemanticGuidedHumanMatting.png"
+          "filepath": "PC_SemanticGuidedHumanMatting.gizmo",
+          "name": "PC_SemanticGuidedHumanMatting",
+          "icon": "PC_SemanticGuidedHumanMatting.png"
       }
   ]
 }

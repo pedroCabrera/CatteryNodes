@@ -8,34 +8,33 @@ define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
             <dock id="" hideTitles="1" activePageId="Toolbar.1">
                 <page id="Toolbar.1"/>
             </dock>
-            <split size="1262" stretch="1"/>
+            <split size="1202" stretch="1"/>
             <splitter orientation="1">
-                <split size="987"/>
+                <split size="1198"/>
                 <dock id="" activePageId="DAG.1" focus="true">
                     <page id="DAG.1"/>
                     <page id="Curve Editor.1"/>
                     <page id="DopeSheet.1"/>
-                    <page id="DAG.2"/>
-                    <page id="DAG.3"/>
                 </dock>
-                <split size="271"/>
+                <split size="0"/>
                 <dock id="" activePageId="uk.co.thefoundry.scripteditor.2">
                     <page id="uk.co.thefoundry.scripteditor.2"/>
                 </dock>
             </splitter>
-            <split size="610"/>
+            <split size="670"/>
             <dock id="" activePageId="Properties.1">
                 <page id="Properties.1"/>
                 <page id="uk.co.thefoundry.backgroundrenderview.1"/>
             </dock>
         </splitter>
     </window>
-    <window x="-1920" y="22" w="1918" h="1008" screen="1">
+    <window x="-1913" y="22" w="1920" h="1080" maximized="1" fullscreen="1" screen="1">
         <splitter orientation="2">
-            <split size="1008"/>
+            <split size="1080"/>
             <dock id="" activePageId="Viewer.1">
-                <page id="Viewer.2"/>
                 <page id="Viewer.1"/>
+                <page id="Viewer.3"/>
+                <page id="Viewer.2"/>
             </dock>
         </splitter>
     </window>
@@ -43,74 +42,287 @@ define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
 }
 Root {
  inputs 0
- name "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/CatFileCreators.nk"
- frame 85
+ name C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/CatFileCreators.nk
+ frame 1001
  last_frame 3000
  format "1920 1080 0 0 1920 1080 1 HD_1080"
  proxy_type scale
  proxy_format "1024 778 0 0 1024 778 1 1K_Super_35(full-ap)"
- colorManagement Nuke
+ colorManagement OCIO
  OCIO_config custom
  customOCIOConfigPath "C:/Program Files/Nuke12.2v6/plugins/OCIOConfigs/configs/aces_1.1/config.ocio"
- workingSpaceLUT linear
- monitorLut sRGB
- monitorOutLUT rec709
- int8Lut sRGB
- int16Lut sRGB
- logLut Cineon
- floatLut linear
+ defaultViewerLUT "OCIO LUTs"
+ workingSpaceLUT scene_linear
+ monitorLut "sRGB (ACES)"
+ monitorOutLUT "sRGB (ACES)"
+ int8Lut matte_paint
+ int16Lut texture_paint
+ logLut compositing_log
+ floatLut scene_linear
 }
 BackdropNode {
  inputs 0
  name BackdropNode1
  tile_color 0x388e8e00
  note_font_size 42
- xpos 277
- ypos -251
- bdwidth 358
- bdheight 233
+ xpos 51
+ ypos -733
+ bdwidth 577
+ bdheight 246
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/rvm_resnet50.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/PC_RobustVideoMatting/rvm_resnet50.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red
+ modelId rvm_mobilenetv3
+ name rvm_resnet50
+ tile_color 0xff00ff
+ xpos 180
+ ypos -641
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {6 reset +STARTLINE}
+ reset true
+ addUserKnob {7 downsample_ratio}
+ downsample_ratio 0.25
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/sam_vit_b.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/PC_Segment_anything/sam_vit_b.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red,rgba.green,rgba.blue
+ modelId sam_vit_b
+ name sam_vit_b
+ xpos 64
+ ypos -681
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {12 position}
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/sam_vit_h.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/PC_Segment_anything/sam_vit_h.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red,rgba.green,rgba.blue
+ modelId sam_vit_h
+ name sam_vit_h
+ xpos 63
+ ypos -604
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {12 position}
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/sam_vit_l.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/PC_Segment_anything/sam_vit_l.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red,rgba.green,rgba.blue
+ modelId sam_vit_l
+ name sam_vit_l
+ xpos 63
+ ypos -641
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {12 position}
 }
 Read {
  inputs 0
- file_type mov
- file "C:/Users/pedro/GoogleDrive/Mi unidad/BASURAS/VIDEOS/ANDRES_V3.mp4"
- format "1920 1080 0 0 1920 1080 1 HD_1080"
- last 366
- origlast 366
+ file_type png
+ file C:/Users/pedro/Desktop/TEST_FILES/fotos/rata.png
+ format "1024 1024 0 0 1024 1024 1 square_1K"
  origset true
- colorspace linear
- name Read2
- xpos -431
- ypos -185
+ colorspace matte_paint
+ name Read4
+ xpos -505
+ ypos -657
+}
+OCIOColorSpace {
+ in_colorspace compositing_linear
+ out_colorspace matte_paint
+ name OCIOColorSpace2
+ xpos -505
+ ypos -540
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/rvm_mobilenetv3.pt"
+ catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/PC_RobustVideoMatting/rvm_mobilenetv3.cat"
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red
+ modelId rvm_mobilenetv3
+ name rvm_mobilenetv
+ tile_color 0xff00ff
+ xpos 184
+ ypos -678
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {6 reset +STARTLINE}
+ reset true
+ addUserKnob {7 downsample_ratio}
+ downsample_ratio 0.25
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/segmentation_refinement/nuke/cascade_psp.pt
+ catFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/segmentation_refinement/nuke/PC_Segmentation_Refinement/cascade_psp.cat
+ channelsIn rgba.red,rgba.green,rgba.blue,rgba.alpha
+ channelsOut rgba.red
+ modelId cascade_psp
+ name cascade_psp1
+ tile_color 0xff00ff
+ xpos 292
+ ypos -678
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {6 optimize_speed +STARTLINE}
+ addUserKnob {3 L}
+ L 900
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/ModNet/nuke/modnet_photographic_portrait_matting.pt
+ catFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/ModNet/nuke/PC_Improved_ModNet/modnet_photographic_portrait_matting.pt.cat
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red
+ modelId modNet
+ name MODNET
+ tile_color 0xff00ff
+ xpos 397
+ ypos -678
+ postage_stamp false
+ addUserKnob {20 User}
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/SemanticGuidedHumanMatting/nuke/SGHM-ResNet50.pt
+ catFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/SemanticGuidedHumanMatting/nuke/PC_SemanticGuidedHumanMatting/SGHM-ResNet50.cat
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red
+ modelId SGHM-ResNet50
+ name SGHM_RESNET
+ tile_color 0xff00ff
+ xpos 504
+ ypos -678
+ postage_stamp false
+ addUserKnob {20 User}
 }
 Read {
  inputs 0
- file_type mov
- file C:/Users/pedro/Desktop/TEST_FILES/VIDEO/ASU_104_022_0030_pararunaway_v002.mov
+ file_type exr
+ file N:/TV_DEPARTMENT/BAMBU_ASUNTA/shots/ASU_104/ASU_104_022/ASU_104_022_0030/COMP/elements/denoise/ASU_104_022_0030_denoise_v002/ASU_104_022_0030_denoise_v002.%04d.exr
  format "3840 2638 0 0 3840 2638 1 "
- last 203
- origlast 203
+ first 1001
+ last 1203
+ origfirst 1001
+ origlast 1203
  origset true
- colorspace linear
- name Read1
- xpos -434
- ypos -315
+ name Read3
+ xpos -215
+ ypos -555
 }
-push 0
+OCIOColorSpace {
+ in_colorspace default
+ out_colorspace matte_paint
+ name OCIOColorSpace1
+ xpos -215
+ ypos -430
+}
+Dot {
+ name Dot2
+ xpos -181
+ ypos -341
+}
+set N3365f400 [stack 0]
+PC_RobustVideoMatting.gizmo {
+ name PC_RobustVideoMatting1
+ xpos -74
+ ypos -208
+ model rvm_resnet50
+ DOC 1
+}
+set Nae67ec00 [stack 0]
+push $N3365f400
+push $Nae67ec00
+push $N3365f400
+PC_SemanticGuidedHumanMatting.gizmo {
+ name PC_SemanticGuidedHumanMatting1
+ xpos -215
+ ypos -247
+}
+push $N3365f400
+MODNet {
+ name MODNet1
+ xpos -383
+ ypos -210
+ in_colorspace data
+}
+Switch {
+ inputs 3
+ name Switch1
+ xpos -197
+ ypos -119
+}
+push $N3365f400
+Dot {
+ name Dot1
+ xpos 127
+ ypos -341
+}
+Copy {
+ inputs 2
+ from0 rgba.red
+ to0 rgba.alpha
+ name Copy1
+ xpos 93
+ ypos -125
+}
+Premult {
+ name Premult1
+ xpos 93
+ ypos -51
+}
+Constant {
+ inputs 0
+ channels rgb
+ color {0.058842 1 0.209368 1}
+ color_panelDropped true
+ format "1920 1080 0 0 1920 1080 1 HD_1080"
+ name Constant1
+ xpos 254
+ ypos -245
+}
+Crop {
+ box {0 0 {parent.Copy1.input.width} {parent.Copy1.input.height}}
+ reformat true
+ crop false
+ name Crop1
+ xpos 254
+ ypos -119
+}
+Merge2 {
+ inputs 2
+ name Merge1
+ xpos 254
+ ypos -51
+}
 Viewer {
  inputs 3
+ frame 1001
  frame_range 366-366
- gamma 1.98
- colour_sample_bbox {0.2354166657 -0.1291666627 0.2364583313 -0.128124997}
- samplepoints {{0.2354166657 -0.1291666627}
+ colour_sample_bbox {-0.6359375119 -0.3406249881 -0.6354166865 -0.3401041627}
+ samplepoints {{-0.6359375119 -0.3406249881}
    }
  gl_buffer_depth half-float
  useGPUForViewer true
  useGPUForInputs true
- viewerProcess None
+ viewerProcess "Raw (ACES)"
  translate {-0.03749999404 -0.0270000007}
  softSelect true
- monitorOutOutputTransform rec709
  name Viewer1
  xpos 97
  ypos 425
@@ -127,98 +339,26 @@ Viewer {
  addUserKnob {6 inputState8 +INVISIBLE +STARTLINE}
  addUserKnob {6 inputState9 +INVISIBLE +STARTLINE}
 }
-CatFileCreator {
+Read {
  inputs 0
- torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/segmentation_refinement/nuke/cascade_psp.pt"
- catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/segmentation_refinement/nuke/PC_Segmentation_Refinement/cascade_psp.cat"
- channelsIn rgba.red,rgba.green,rgba.blue,rgba.alpha
- channelsOut rgba.red
- modelId cascade_psp
- name cascade_psp1
- tile_color 0xff00ff
- xpos 525
- ypos -196
- postage_stamp false
- addUserKnob {20 User}
- addUserKnob {6 optimize_speed +STARTLINE}
- addUserKnob {3 L}
- L 900
+ file_type png
+ file C:/Users/pedro/Desktop/TEST_FILES/fotos/rata.png
+ format "1024 1024 0 0 1024 1024 1 square_1K"
+ origset true
+ colorspace matte_paint
+ raw true
+ name Read7
+ xpos -514
+ ypos -489
 }
-CatFileCreator {
+Read {
  inputs 0
- torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/rvm_mobilenetv3.pt"
- catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/PC_RobustVideoMatting/rvm_mobilenetv3.cat"
- channelsIn rgba.red,rgba.green,rgba.blue
- channelsOut rgba.red
- modelId rvm_mobilenetv3
- name rvm_mobilenetv
- tile_color 0xff00ff
- xpos 410
- ypos -196
- postage_stamp false
- addUserKnob {20 User}
- addUserKnob {6 reset +STARTLINE}
- reset true
- addUserKnob {7 downsample_ratio}
- downsample_ratio 0.25
-}
-CatFileCreator {
- inputs 0
- torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/rvm_resnet50.pt"
- catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/PC_RobustVideoMatting/rvm_resnet50.cat"
- channelsIn rgba.red,rgba.green,rgba.blue
- channelsOut rgba.red
- modelId rvm_mobilenetv3
- name rvm_resnet50
- tile_color 0xff00ff
- xpos 406
- ypos -159
- postage_stamp false
- addUserKnob {20 User}
- addUserKnob {6 reset +STARTLINE}
- reset true
- addUserKnob {7 downsample_ratio}
- downsample_ratio 0.25
-}
-CatFileCreator {
- inputs 0
- torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/sam_vit_b.pt"
- catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/PC_Segment_anything/sam_vit_b.cat"
- channelsIn rgba.red,rgba.green,rgba.blue
- channelsOut rgba.red,rgba.green,rgba.blue
- modelId sam_vit_b
- name sam_vit_b
- xpos 290
- ypos -199
- postage_stamp false
- addUserKnob {20 User}
- addUserKnob {12 position}
-}
-CatFileCreator {
- inputs 0
- torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/sam_vit_h.pt"
- catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/PC_Segment_anything/sam_vit_h.cat"
- channelsIn rgba.red,rgba.green,rgba.blue
- channelsOut rgba.red,rgba.green,rgba.blue
- modelId sam_vit_h
- name sam_vit_h
- xpos 289
- ypos -122
- postage_stamp false
- addUserKnob {20 User}
- addUserKnob {12 position}
-}
-CatFileCreator {
- inputs 0
- torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/sam_vit_l.pt"
- catFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/CatteryNodes/segment-anything/nuke/PC_Segment_anything/sam_vit_l.cat"
- channelsIn rgba.red,rgba.green,rgba.blue
- channelsOut rgba.red,rgba.green,rgba.blue
- modelId sam_vit_l
- name sam_vit_l
- xpos 289
- ypos -159
- postage_stamp false
- addUserKnob {20 User}
- addUserKnob {12 position}
+ file_type png
+ file C:/Users/pedro/Desktop/TEST_FILES/fotos/rata_alpha.png
+ format "1024 1024 0 0 1024 1024 1 square_1K"
+ origset true
+ raw true
+ name Read5
+ xpos -509
+ ypos -351
 }

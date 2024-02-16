@@ -11,7 +11,7 @@ import numpy as np
 
 
 filePath = os.path.dirname(__file__)
-modelPath = os.path.join(filePath,"pretrained/new_model")
+modelPath = os.path.join(filePath,"pretrained/new_model.cascadepsp")
 nukeModelPath = os.path.join(filePath,"pretrained/nuke/cascade_psp_v3.pt")
 
 imagePath = os.path.join(filePath,"truck.jpg")

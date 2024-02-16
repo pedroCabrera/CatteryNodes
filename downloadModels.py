@@ -1,5 +1,7 @@
 from urllib.request import urlretrieve
 import os
+
+
 # Robust Video Matting Weights
 url1 = (r"https://github.com/PeterL1n/RobustVideoMatting/releases/download/v1.0.0/rvm_mobilenetv3.pth")
 url2= (r"https://github.com/PeterL1n/RobustVideoMatting/releases/download/v1.0.0/rvm_resnet50.pth")
@@ -33,3 +35,16 @@ for url, filename in zip([url1, url2, url3], [filename1, filename2, filename3]):
         print(f"Downloaded {filename}")  
     else:
         print(f"{filename} already exists")          
+
+
+# Semantic Guided Human Matting Weights
+url = (r"https://drive.usercontent.google.com/download?id=1Ar5ASgfCUBmgZLwLHz6lThCQ-2EVnvqr&export=download&authuser=0&confirm=t&uuid=44d6eb9b-6e1c-4aa3-ab13-71f2e3252c15&at=APZUnTUQHh279lJwxkrUcX1F_SX5:1708043666682")
+filename = "SemanticGuidedHumanMatting/pretrained/SGHM-ResNet50.pth"
+if not os.path.exists(filename):
+    if not os.path.exists(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))    
+    print(f"Downloading {filename}")  
+    urlretrieve(url, filename)
+    print(f"Downloaded {filename}")  
+else:
+    print(f"{filename} already exists")         

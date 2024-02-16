@@ -1,0 +1,13 @@
+{
+  "minimum_nuke_version_required": 13.1,
+  "version": 1,
+  "category": "PC_Tools/Segmentation",
+  "description": "PC_SemanticGuidedHumanMatting",
+  "cats": [
+      {
+          "filepath": "PC_PC_SemanticGuidedHumanMatting.gizmo",
+          "name": "PC_PC_SemanticGuidedHumanMatting",
+          "icon": "PC_PC_SemanticGuidedHumanMatting.png"
+      }
+  ]
+}

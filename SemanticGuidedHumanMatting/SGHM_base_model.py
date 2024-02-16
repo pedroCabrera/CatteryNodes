@@ -1,80 +1,98 @@
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "MODNet"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "SemanticGuidedHumanMatting"))
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+from model.model import HumanSegment, HumanMatting
+# --------------- Main ---------------
 
-from MODNet.torchscript.modnet_torchscript import IBNorm, Conv2dIBNormRelu, SEBlock, LRBranch, HRBranch, FusionBranch
-from src.models.backbones import SUPPORTED_BACKBONES
-
-class MODNetBaseModel(nn.Module):
-    """ Architecture of MODNetBaseModel
+infer_size = 1280
+class SGHMBaseModel(nn.Module):
+    """ Architecture of SGHMBaseModel
     """
 
-    def __init__(self, in_channels=3, hr_channels=32, backbone_arch='mobilenetv2', backbone_pretrained=True):
-        super(MODNetBaseModel, self).__init__()
+    def __init__(self, modelPath):
+        super(SGHMBaseModel, self).__init__()
 
-        self.in_channels = in_channels
-        self.hr_channels = hr_channels
-        self.backbone_arch = backbone_arch
-        self.backbone_pretrained = backbone_pretrained
-
-        self.backbone = SUPPORTED_BACKBONES[self.backbone_arch](self.in_channels)
-
-        self.lr_branch = LRBranch(self.backbone)
-        self.hr_branch = HRBranch(self.hr_channels, self.backbone.enc_channels)
-        self.f_branch = FusionBranch(self.hr_channels, self.backbone.enc_channels)
-
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                self._init_conv(m)
-            elif isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.InstanceNorm2d):
-                self._init_norm(m)
-
-        if self.backbone_pretrained:
-            self.backbone.load_pretrained_ckpt()                
+        # Load Model
+        #self.model = model
+        state_dict = torch.load(modelPath)
+        new_state_dict = {}
+        for k, v in state_dict.items():
+            index = k.find('module.')
+            if index != -1:
+                new_key = k[:index] + k[index+len('module.'):]
+            else:
+                new_key = k
+            new_state_dict[new_key] = v        
+        self.model = HumanMatting(backbone='resnet50')
+        #self.model = nn.DataParallel(self.model).eval()
+        self.model.load_state_dict(new_state_dict)   
+        self.model.cuda().eval()
+        
 
     def forward(self, img):
-        # NOTE
         dtype = img.dtype
         if(img.is_cuda):
            device = torch.device('cuda')
+           self.model.cuda()
         else:
            device = torch.device('cpu')   
-        src = img.to(device, dtype, non_blocking=True)  
-        #self.to(device, dtype, non_blocking=True)     
-        mean = torch.tensor([0.5, 0.5, 0.5]).view(-1, 1, 1).to(device, dtype, non_blocking=True)
-        std = torch.tensor([0.5, 0.5, 0.5]).view(-1, 1, 1).to(device, dtype, non_blocking=True)
-        src =  (src - mean) / std        
-        lr_out = self.lr_branch(src)
-        lr8x = lr_out[0]
-        enc2x = lr_out[1]
-        enc4x = lr_out[2]
-
-        hr2x = self.hr_branch(src, enc2x, enc4x, lr8x)
         
-        pred_matte = self.f_branch(src, lr8x, hr2x)
+        B, C, h, w = img.shape
+        if w >= h:
+            rh = infer_size
+            rw = int(w / h * infer_size)
+        else:
+            rw = infer_size
+            rh = int(h / w * infer_size)
+        rh = rh - rh % 64
+        rw = rw - rw % 64    
+        img = img.to(device, dtype, non_blocking=True)  
 
-        return pred_matte
-    
-    def freeze_norm(self):
-        norm_types = [nn.BatchNorm2d, nn.InstanceNorm2d]
-        for m in self.modules():
-            for n in norm_types:
-                if isinstance(m, n):
-                    m.eval()
-                    continue
+        input_tensor = F.interpolate(img, size=(rh, rw), mode='bilinear')
+        with torch.no_grad():
+            pred = self.model(input_tensor)
 
-    def _init_conv(self, conv):
-        nn.init.kaiming_uniform_(
-            conv.weight, a=0, mode='fan_in', nonlinearity='relu')
-        if conv.bias is not None:
-            nn.init.constant_(conv.bias, 0)
+        # progressive refine alpha
+        alpha_pred_os1, alpha_pred_os4, alpha_pred_os8 = pred['alpha_os1'], pred['alpha_os4'], pred['alpha_os8']
+        pred_alpha = alpha_pred_os8.clone().detach()
+        weight_os4 = self.get_unknown_tensor_from_pred(pred_alpha, rand_width=30, train_mode=False)
+        pred_alpha[weight_os4>0] = alpha_pred_os4[weight_os4>0]
+        weight_os1 = self.get_unknown_tensor_from_pred(pred_alpha, rand_width=15, train_mode=False)
+        pred_alpha[weight_os1>0] = alpha_pred_os1[weight_os1>0]
 
-    def _init_norm(self, norm):
-        if norm.weight is not None:
-            nn.init.constant_(norm.weight, 1)
-            nn.init.constant_(norm.bias, 0)
+        #pred_alpha = pred_alpha.repeat(1, 3, 1, 1)
+        pred_alpha = F.interpolate(pred_alpha, size=(h, w), mode='bilinear')
 
+        # output segment
+        #pred_segment = pred['segment']
+        #pred_segment = F.interpolate(pred_segment, size=(h, w), mode='bilinear')
+
+        return pred_alpha
+
+    def get_unknown_tensor_from_pred(self, pred, rand_width=30, train_mode=True):
+        ### pred: N, 1 ,H, W 
+        N, C, H, W = pred.shape
+
+        uncertain_area = torch.ones_like(pred)
+        uncertain_area[pred<1.0/255.0] = 0
+        uncertain_area[pred>1-1.0/255.0] = 0
+
+        for n in range(N):
+            uncertain_area_ = uncertain_area[n,0,:,:] # H, W
+            if train_mode:
+                width = torch.randint(1, rand_width, (1,)).item()
+            else:
+                width = rand_width // 2
+            padding = width // 2
+            uncertain_area_ = F.max_pool2d(uncertain_area_.unsqueeze(0).unsqueeze(0), kernel_size=width, stride=1, padding=padding).squeeze(0).squeeze(0)
+            uncertain_area[n,0,:,:] = uncertain_area_
+
+        weight = torch.zeros_like(uncertain_area)
+        weight[uncertain_area == 1] = 1
+
+        return weight.cuda()

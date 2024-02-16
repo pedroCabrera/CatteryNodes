@@ -5,9 +5,8 @@ def createCatModel():
     cat_file_creator = nuke.createNode('CatFileCreator')
 
     path = os.path.join(os.path.dirname(__file__), "nuke")
-    path = r"C:\Users\pedro\Desktop\ENVIRONMENTS\CatteryNodes\segment-anything\nuke"
     channelsIn = "rgba.red,rgba.green,rgba.blue"
-    channelsOut = "rgba.red"
+    channelsOut = "rgba.red,rgba.green,rgba.blue"
     outputscale = 1
 
     custom_knob = nuke.XY_Knob("position","position")

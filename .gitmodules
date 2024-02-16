@@ -10,6 +10,4 @@
 [submodule "ModNet\\MODNet"]
 	path = ModNet\\MODNet
 	url = https://github.com/ZHKKKe/MODNet
-[submodule "SemanticGuidedHumanMatting\\SemanticGuidedHumanMatting"]
-	path = SemanticGuidedHumanMatting\\SemanticGuidedHumanMatting
-	url = https://github.com/cxgincsu/SemanticGuidedHumanMatting
+

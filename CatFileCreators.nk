@@ -8,20 +8,21 @@ define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
             <dock id="" hideTitles="1" activePageId="Toolbar.1">
                 <page id="Toolbar.1"/>
             </dock>
-            <split size="1202" stretch="1"/>
+            <split size="1378" stretch="1"/>
             <splitter orientation="1">
-                <split size="1198"/>
-                <dock id="" activePageId="DAG.1" focus="true">
+                <split size="813"/>
+                <dock id="" activePageId="DAG.1">
                     <page id="DAG.1"/>
                     <page id="Curve Editor.1"/>
                     <page id="DopeSheet.1"/>
+                    <page id="DAG.2"/>
                 </dock>
-                <split size="0"/>
-                <dock id="" activePageId="uk.co.thefoundry.scripteditor.2">
+                <split size="561"/>
+                <dock id="" activePageId="uk.co.thefoundry.scripteditor.2" focus="true">
                     <page id="uk.co.thefoundry.scripteditor.2"/>
                 </dock>
             </splitter>
-            <split size="670"/>
+            <split size="494"/>
             <dock id="" activePageId="Properties.1">
                 <page id="Properties.1"/>
                 <page id="uk.co.thefoundry.backgroundrenderview.1"/>
@@ -130,24 +131,6 @@ CatFileCreator {
  addUserKnob {20 User}
  addUserKnob {12 position}
 }
-Read {
- inputs 0
- file_type png
- file C:/Users/pedro/Desktop/TEST_FILES/fotos/rata.png
- format "1024 1024 0 0 1024 1024 1 square_1K"
- origset true
- colorspace matte_paint
- name Read4
- xpos -505
- ypos -657
-}
-OCIOColorSpace {
- in_colorspace compositing_linear
- out_colorspace matte_paint
- name OCIOColorSpace2
- xpos -505
- ypos -540
-}
 CatFileCreator {
  inputs 0
  torchScriptFile "C:/Users/pedro/GoogleDrive/Mi unidad/CODE/AI/Nuke/Cattery/RobustVideoMatting/nuke/rvm_mobilenetv3.pt"
@@ -166,22 +149,28 @@ CatFileCreator {
  addUserKnob {7 downsample_ratio}
  downsample_ratio 0.25
 }
-CatFileCreator {
+Read {
  inputs 0
- torchScriptFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/segmentation_refinement/nuke/cascade_psp.pt
- catFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/segmentation_refinement/nuke/PC_Segmentation_Refinement/cascade_psp.cat
- channelsIn rgba.red,rgba.green,rgba.blue,rgba.alpha
- channelsOut rgba.red
- modelId cascade_psp
- name cascade_psp1
- tile_color 0xff00ff
- xpos 292
- ypos -678
- postage_stamp false
- addUserKnob {20 User}
- addUserKnob {6 optimize_speed +STARTLINE}
- addUserKnob {3 L}
- L 900
+ file_type png
+ file C:/Users/pedro/Desktop/TEST_FILES/fotos/rata.png
+ format "1024 1024 0 0 1024 1024 1 square_1K"
+ origset true
+ colorspace matte_paint
+ raw true
+ name Read7
+ xpos -514
+ ypos -489
+}
+Read {
+ inputs 0
+ file_type png
+ file C:/Users/pedro/Desktop/TEST_FILES/fotos/rata_alpha.png
+ format "1024 1024 0 0 1024 1024 1 square_1K"
+ origset true
+ raw true
+ name Read5
+ xpos -509
+ ypos -351
 }
 CatFileCreator {
  inputs 0
@@ -193,20 +182,6 @@ CatFileCreator {
  name MODNET
  tile_color 0xff00ff
  xpos 397
- ypos -678
- postage_stamp false
- addUserKnob {20 User}
-}
-CatFileCreator {
- inputs 0
- torchScriptFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/SemanticGuidedHumanMatting/nuke/SGHM-ResNet50.pt
- catFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/SemanticGuidedHumanMatting/nuke/PC_SemanticGuidedHumanMatting/SGHM-ResNet50.cat
- channelsIn rgba.red,rgba.green,rgba.blue
- channelsOut rgba.red
- modelId SGHM-ResNet50
- name SGHM_RESNET
- tile_color 0xff00ff
- xpos 504
  ypos -678
  postage_stamp false
  addUserKnob {20 User}
@@ -247,20 +222,115 @@ PC_RobustVideoMatting.gizmo {
 }
 set Nae67ec00 [stack 0]
 push $N3365f400
-push $Nae67ec00
-push $N3365f400
 PC_SemanticGuidedHumanMatting.gizmo {
  name PC_SemanticGuidedHumanMatting1
  xpos -215
- ypos -247
+ ypos -230
 }
 push $N3365f400
-MODNet {
- name MODNet1
+Group {
+ name Group1
+ onCreate "import sys\nthis = nuke.thisNode()\ninference = nuke.toNode(f\"\{this.name()\}.Inference2\")\nthis\[\"gpuName\"].setValue(inference\[\"gpuName\"].value())\nthis\[\"channelsIn\"].setValue(\"rgba.red, rgba.green, rgba.blue\")\ninference.forceValidate()\nis_enabled = inference\[\"modelFile\"].enabled()\nif (sys.platform.lower() == \"darwin\") and (not inference\[\"useGPUIfAvailable\"].enabled()): this\[\"useGPUIfAvailable\"].setValue(False), this\[\"useGPUIfAvailable\"].setEnabled(False)\nif not is_enabled:\n    for k in this.knobs(): this\[k].setEnabled(False)\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].enabled())"
+ onDestroy "nuke.thisNode()\[\"knobChanged\"].setValue(\"\")"
+ knobChanged "this = nuke.thisNode()\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].value())"
  xpos -383
- ypos -210
- in_colorspace data
+ ypos -186
+ addUserKnob {20 MODNet}
+ addUserKnob {26 localGPU l "Local GPU:" T ""}
+ addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA GeForce RTX 3090"}
+ addUserKnob {6 useGPUIfAvailable l "Use GPU if available" t "Select this to render on the <b>Local GPU</b>, if available.\n\nYou can select this even if no GPU is currently available on your machine. The GPU will then be used whenever the script is opened on a machine which does have a GPU available. You should also select this if you wish to render from the command line with the <b>--gpu</b> option.\n\nIf this node requires full frames from its inputs, and is therefore unable to reduce its memory overhead, it will fall back to the CPU if an attempt to render a frame on the GPU fails due to lack of memory. When this occurs, a warning message will be printed to the console." +STARTLINE}
+ useGPUIfAvailable true
+ addUserKnob {26 ""}
+ addUserKnob {26 channelsIn l "Channels In:" t "The channels the model expects as input." T "rgba.red, rgba.green, rgba.blue"}
+ addUserKnob {41 in_colorspace l "Input Colorspace" t "Define the colorspace that the input image is in." T OCIOColorSpace1.in_colorspace}
+ addUserKnob {6 resize_input l "Resize input for best results" t "Before applying MODNet to the input, resize it so that either its width or height is of size 512. Images of this size often give the best results. " +STARTLINE}
+ resize_input true
+ addUserKnob {6 halfPrecision l "Optimize for Speed and Memory" t "Whether to process at half float precision. This speeds up execution and enables the processing of larger images, however there is the risk of artifacts with some trained models." +STARTLINE}
 }
+ BackdropNode {
+  inputs 0
+  name BackdropNode1
+  tile_color 0x388e8e00
+  label "Resize image so one side is 512. \nThis gives best results."
+  note_font_size 12
+  xpos -662
+  ypos -62
+  bdwidth 257
+  bdheight 90
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode2
+  tile_color 0x8e374aff
+  gl_color 0xcc3b36ff
+  label "Ensure input to Inference has height \nand width values that are multiples\nof 32."
+  note_font_size 12
+  xpos -660
+  ypos 84
+  bdwidth 260
+  bdheight 87
+ }
+ Input {
+  inputs 0
+  name Input1
+  xpos -588
+  ypos -102
+ }
+ Reformat {
+  type scale
+  scale {{"(min(input.width, input.height) == input.width) ? (512)/input.width :  (512)/input.height"}}
+  name Reformat1
+  xpos -588
+  ypos -3
+  disable {{!(parent.resize_input)}}
+ }
+ OCIOColorSpace {
+  in_colorspace default
+  out_colorspace color_picking
+  name OCIOColorSpace1
+  selected true
+  xpos -588
+  ypos 44
+ }
+ Crop {
+  box {0 {"input.height%32 == 0 ? 0 : 0 - (32 - input.height%32) "} {"input.width%32 == 0 ? input.width : (32 - input.width%32) + input.width"} {input.height}}
+  reformat true
+  crop false
+  name Crop4
+  xpos -588
+  ypos 144
+ }
+ Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable x1 0}}
+  modelFile "\[lsearch -inline \[plugins -all modnet.cat] *.cat]"
+  halfPrecision {{parent.halfPrecision}}
+  serialiseKnob {}
+  name Inference2
+  xpos -588
+  ypos 225
+ }
+ Crop {
+  box {0 {"OCIOColorSpace1.height%32 == 0 ? 0 : (32 - OCIOColorSpace1.height%32)"} {"OCIOColorSpace1.width%32 == 0 ? input.width : input.width - (32 - OCIOColorSpace1.width%32)"} {input.height}}
+  reformat true
+  crop false
+  name Crop5
+  xpos -588
+  ypos 305
+ }
+ Reformat {
+  type scale
+  scale {{1/(Reformat1.scale)}}
+  name Reformat2
+  xpos -588
+  ypos 354
+  disable {{!(parent.resize_input)}}
+ }
+ Output {
+  name Output1
+  xpos -588
+  ypos 410
+ }
+end_group
 Switch {
  inputs 3
  name Switch1
@@ -310,6 +380,217 @@ Merge2 {
  xpos 254
  ypos -51
 }
+CatFileCreator {
+ inputs 0
+ torchScriptFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/SemanticGuidedHumanMatting/nuke/SGHM-ResNet50.pt
+ catFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/SemanticGuidedHumanMatting/nuke/PC_SemanticGuidedHumanMatting/SGHM-ResNet50.cat
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red
+ modelId SGHM-ResNet50
+ name SGHM_RESNET
+ tile_color 0xff00ff
+ xpos 504
+ ypos -678
+ postage_stamp false
+ addUserKnob {20 User}
+}
+Read {
+ inputs 0
+ file_type png
+ file C:/Users/pedro/Desktop/TEST_FILES/fotos/rata.png
+ format "1024 1024 0 0 1024 1024 1 square_1K"
+ origset true
+ colorspace matte_paint
+ name Read4
+ xpos -505
+ ypos -657
+}
+OCIOColorSpace {
+ in_colorspace compositing_linear
+ out_colorspace matte_paint
+ name OCIOColorSpace2
+ xpos -505
+ ypos -540
+}
+Read {
+ inputs 0
+ file_type png
+ file C:/Users/pedro/Desktop/TEST_FILES/fotos/rata.png
+ format "1024 1024 0 0 1024 1024 1 square_1K"
+ origset true
+ colorspace matte_paint
+ name Read1
+ xpos -78
+ ypos -626
+}
+OCIOColorSpace {
+ in_colorspace compositing_linear
+ out_colorspace matte_paint
+ name OCIOColorSpace3
+ xpos -78
+ ypos -530
+}
+Roto {
+ output alpha
+ cliptype none
+ curves {{{v x3f99999a}
+  {f 0}
+  {n
+   {layer Root
+    {f 2097152}
+    {t x44000000 x44000000}
+    {a pt1x 0 pt1y 0 pt2x 0 pt2y 0 pt3x 0 pt3y 0 pt4x 0 pt4y 0 ptex00 0 ptex01 0 ptex02 0 ptex03 0 ptex10 0 ptex11 0 ptex12 0 ptex13 0 ptex20 0 ptex21 0 ptex22 0 ptex23 0 ptex30 0 ptex31 0 ptex32 0 ptex33 0 ptof1x 0 ptof1y 0 ptof2x 0 ptof2y 0 ptof3x 0 ptof3y 0 ptof4x 0 ptof4y 0 pterr 0 ptrefset 0 ptmot x40800000 ptref 0}
+    {curvegroup Bezier1 512 bezier
+     {{cc
+       {f 8192}
+       {px x447a4000
+        {x40900000 0}
+        {x43a8c000 x44418000}
+        {xc0900000 0}
+        {x41200000 x41480000}
+        {x43898000 x442e6000}
+        {xc1200000 xc1480000}
+        {0 x42020000}
+        {x436d8000 x440dc000}
+        {0 xc2020000}
+        {0 0}
+        {x43720000 x43fe8000}
+        {0 0}
+        {0 0}
+        {x437b8000 x43e94000}
+        {0 0}
+        {x40200000 0}
+        {x431b0000 x43e84000}
+        {xc0200000 0}
+        {0 0}
+        {x42970000 x43dc8000}
+        {0 0}
+        {0 x41b80000}
+        {x41f00000 x439d8000}
+        {0 xc1b80000}
+        {x40f00000 x41480000}
+        {x421c0000 x43508000}
+        {xc0f00000 xc1480000}
+        {xc0900000 x41100000}
+        {x41580000 x42fa0000}
+        {x40900000 xc1100000}
+        {0 x40000000}
+        {x42440000 xc0a00000}
+        {0 xc0000000}
+        {1 xbf800000}
+        {x442d6666 xc1533320}
+        {xbf800000 1}
+        {x40400000 xc0c00000}
+        {x442e4000 x42400000}
+        {xc0400000 x40c00000}
+        {x40a00000 xc1200000}
+        {x44230000 x431e0000}
+        {xc0a00000 x41200000}
+        {x41200000 xc1880000}
+        {x44078000 x43960000}
+        {xc1200000 x41880000}
+        {xc0c00000 0}
+        {x440e8000 x43a60000}
+        {x40c00000 0}
+        {0 0}
+        {x44278000 x43a48000}
+        {0 0}
+        {0 xc1980000}
+        {x44300000 x43cb0000}
+        {0 x41980000}
+        {xc0400000 xc0000000}
+        {x44350000 x43e98000}
+        {x40400000 x40000000}
+        {0 xc0400000}
+        {x44404000 x43f08000}
+        {0 x40400000}
+        {x40e00000 xc0c00000}
+        {x44340000 x44108000}
+        {xc0e00000 x40c00000}
+        {1 xc0400000}
+        {x44250000 x441b8000}
+        {xbf800000 x40400000}
+        {xc0000000 0}
+        {x442c4000 x4423c000}
+        {x40000000 0}
+        {0 0}
+        {x4424c000 x44344000}
+        {0 0}
+        {0 xc1100000}
+        {x442d8000 x4438c000}
+        {0 x41100000}
+        {x40c00000 xc1300000}
+        {x442d8000 x44478000}
+        {xc0c00000 x41300000}
+        {x41200000 xc0a00000}
+        {x441ec000 x44528000}
+        {xc1200000 x40a00000}
+        {x40a00000 0}
+        {x43e18000 x44548000}
+        {xc0a00000 0}}}     idem}
+     {tx x447a4000 x43e6e075 x43e5eccd}
+     {a osw x41200000 osf 0 str 1 spx x44000000 spy x44000000 sb 1 ltn x447a4000 ltm x447a4000 tt x40800000}}}}}}
+ toolbox {selectAll {
+  { selectAll str 1 ssx 1 ssy 1 sf 1 }
+  { createBezier str 1 ssx 1 ssy 1 sf 1 sb 1 tt 4 }
+  { createBezierCusped str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createBSpline str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createEllipse str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createRectangle str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createRectangleCusped str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { brush str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { eraser src 2 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { clone src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { reveal src 3 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { dodge src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { burn src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { blur src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { sharpen src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { smear src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+} }
+ toolbar_brush_hardness 0.200000003
+ toolbar_source_transform_scale {1 1}
+ toolbar_source_transform_center {512 512}
+ colorOverlay {0 0 0 0}
+ lifetime_type "all frames"
+ lifetime_start 1001
+ lifetime_end 1001
+ motionblur_shutter_offset_type centred
+ source_black_outside true
+ name Roto1
+ xpos -78
+ ypos -506
+}
+set Na056f000 [stack 0]
+Inference {
+ modelFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/segmentation_refinement/nuke/PC_Segmentation_Refinement/cascade_psp.cat
+ serialiseKnob {optimize_speed:false;L:900;}
+ name Inference2
+ xpos 78
+ ypos -429
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/segmentation_refinement/nuke/cascade_psp.pt
+ catFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/segmentation_refinement/nuke/PC_Segmentation_Refinement/cascade_psp_test.cat
+ channelsIn "rgba.red,rgba.green,rgba.blue, rgba.a"
+ channelsOut rgba.red
+ modelId cascade_psp
+ name CatFileCreator1
+ xpos 363
+ ypos -622
+ postage_stamp false
+}
+push $Nae67ec00
+push $Na056f000
+push $Na056f000
+Inference {
+ modelFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/segmentation_refinement/nuke/PC_Segmentation_Refinement/cascade_psp_test.cat
+ serialiseKnob {}
+ name Inference1
+ xpos 264
+ ypos -492
+}
 Viewer {
  inputs 3
  frame 1001
@@ -339,26 +620,21 @@ Viewer {
  addUserKnob {6 inputState8 +INVISIBLE +STARTLINE}
  addUserKnob {6 inputState9 +INVISIBLE +STARTLINE}
 }
-Read {
+CatFileCreator {
  inputs 0
- file_type png
- file C:/Users/pedro/Desktop/TEST_FILES/fotos/rata.png
- format "1024 1024 0 0 1024 1024 1 square_1K"
- origset true
- colorspace matte_paint
- raw true
- name Read7
- xpos -514
- ypos -489
-}
-Read {
- inputs 0
- file_type png
- file C:/Users/pedro/Desktop/TEST_FILES/fotos/rata_alpha.png
- format "1024 1024 0 0 1024 1024 1 square_1K"
- origset true
- raw true
- name Read5
- xpos -509
- ypos -351
+ torchScriptFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/segmentation_refinement/nuke/cascade_psp.pt
+ catFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/segmentation_refinement/nuke/PC_Segmentation_Refinement/cascade_psp.cat
+ channelsIn rgba.red,rgba.green,rgba.blue,rgba.alpha
+ channelsOut rgba.red
+ modelId cascade_psp
+ name cascade_psp1
+ tile_color 0xff00ff
+ selected true
+ xpos 292
+ ypos -678
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {6 optimize_speed +STARTLINE}
+ addUserKnob {3 L}
+ L 900
 }

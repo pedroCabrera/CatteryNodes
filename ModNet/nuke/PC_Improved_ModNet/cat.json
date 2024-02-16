@@ -5,9 +5,9 @@
   "description": "PC_Improved_ModNet",
   "cats": [
       {
-          "filepath": "PC_PC_Improved_ModNet.gizmo",
-          "name": "PC_PC_Improved_ModNet",
-          "icon": "PC_PC_Improved_ModNet.png"
+          "filepath": "PC_Improved_ModNet.gizmo",
+          "name": "PC_Improved_ModNet",
+          "icon": "PC_Improved_ModNet.png"
       }
   ]
 }

@@ -19,7 +19,16 @@ class SamPredictorBaseModel(nn.Module):
 		self,
 		variant: str,
 		modelPath: str,
-		position = torch.IntTensor([0, 0])
+		p1 = torch.IntTensor([0,0]),
+		p2 = torch.IntTensor([-1,-1]),
+		p3 = torch.IntTensor([-1,-1]),
+		p4 = torch.IntTensor([-1,-1]),
+		p5 = torch.IntTensor([-1,-1]),
+		n1 = torch.IntTensor([-1,-1]),
+		n2 = torch.IntTensor([-1,-1]),
+		n3 = torch.IntTensor([-1,-1]),
+		n4 = torch.IntTensor([-1,-1]),
+		n5 = torch.IntTensor([-1,-1]),
 	) -> None:
 		"""
 		Uses SAM to calculate the image embedding for an image, and then
@@ -38,7 +47,18 @@ class SamPredictorBaseModel(nn.Module):
 		self.model = sam_model_registry[variant](checkpoint=modelPath)	
 		#self.model.to(device="cuda")
 		self.target_length = self.model.image_encoder.img_size
-		self.position = position
+
+		self.p1 = p1
+		self.p2 = p2
+		self.p3 = p3
+		self.p4 = p4
+		self.p5 = p5
+		self.n1 = n1
+		self.n2 = n2
+		self.n3 = n3
+		self.n4 = n4
+		self.n5 = n5
+
 		self.original_size = (0,0)
 		self.input_size = (0,0)
 		self.mask_threshold = 0.0
@@ -56,24 +76,51 @@ class SamPredictorBaseModel(nn.Module):
 		   self.device = torch.device('cpu')
 		self.dtype = image.dtype
 
-		input_point = self.position.to(self.device, dtype=self.dtype)
-		
-		# Unsqueeze center to add BxN dimension, where B=N=1
-		input_label = torch.tensor([1]).to(self.device)
-
-
 		image = image * 255.0
 		image = torch.clip(image, 0.0, 255.0)
 
 		self.set_torch_image(image.to(self.device))
-
+		
+		#old
+		input_point = self.p1.to(self.device, dtype=self.dtype)
 		input_point[1] = image.shape[2] - input_point[1]
-
 		point_coords = self.apply_coords_torch(input_point, self.original_size,self.target_length)[None, None, :]
+		input_label = torch.tensor([1]).to(self.device)[None, :]
+		print("old")
+		print(point_coords.shape)
+		print(input_label.shape)
+
+		inputpoints = []
+		inputlables = []
+		for point in [self.p1, self.p2, self.p3, self.p4, self.p5]:
+			if point[0] < 0:
+				continue
+			input_point = point.to(self.device, dtype=self.dtype)
+			input_point[1] = image.shape[2] - input_point[1]
+			input_point = self.apply_coords_torch(input_point, self.original_size,self.target_length)
+			input_label = torch.tensor([1]).to(self.device)
+			inputpoints.append(input_point)
+			inputlables.append(input_label)
+		for point in [self.n1, self.n2, self.n3, self.n4, self.n5]:
+			if point[0] < 0:
+				continue
+			input_point = point.to(self.device, dtype=self.dtype)
+			input_point[1] = image.shape[2] - input_point[1]
+			input_point = self.apply_coords_torch(input_point, self.original_size,self.target_length)
+			input_label = torch.tensor([0]).to(self.device)
+			inputpoints.append(input_point)
+			inputlables.append(input_label)
+
+		stacked_points = torch.stack(inputpoints, dim=0).unsqueeze(0)
+		stacked_labels = torch.stack(inputlables, dim=1)
+		print("new")
+		print(stacked_points.shape)
+		print(stacked_labels.shape)
+
 
 		masks, scores, logits = self.predict_torch(
-			point_coords=point_coords,
-			point_labels=input_label[None, :],
+			point_coords=stacked_points,
+			point_labels=stacked_labels,
 			multimask_output=True,
 		)
 		# Sort scores and get indices

@@ -1,8 +1,7 @@
-version 13.1 v1
 Gizmo {
  onCreate "import sys\nthis = nuke.thisNode()\ninference = nuke.toNode(f\"\{this.name()\}.Inference1\")\nthis\[\"gpuName\"].setValue(inference\[\"gpuName\"].value())\nthis\[\"channelsIn\"].setValue(\"rgba.red, rgba.green, rgba.blue\")\ninference.forceValidate()\nis_enabled = inference\[\"modelFile\"].enabled()\nif (sys.platform.lower() == \"darwin\") and (not inference\[\"useGPUIfAvailable\"].enabled()): this\[\"useGPUIfAvailable\"].setValue(False), this\[\"useGPUIfAvailable\"].setEnabled(False)\nif not is_enabled:\n    for k in this.knobs(): this\[k].setEnabled(False)\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].enabled())"
  onDestroy "nuke.thisNode()\[\"knobChanged\"].setValue(\"\")"
- knobChanged "this = nuke.thisNode()\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].value())\nthis.node(\"Inference2\").knob(\"position\").setExpression(\"\{\}.position\".format(this.name()))\nthis.node(\"Inference1\").knob(\"position\").setExpression(\"\{\}.position\".format(this.name()))"
+ knobChanged "this = nuke.thisNode()\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].value())\nfor i,p in enumerate(\[\"p1\", \"p2\", \"p3\", \"p4\",\"p5\",\"n1\",\"n2\",\"n3\",\"n4\",\"n5\"]):\n    e = (i%5)+1\n    text = \"prompt\" if i < 5 else \"negative\"\n    this.node(\"Inference2\").knob(p).setExpression(\"\{\}.\{\}\{\}\".format(this.name(),text,e))\n    this.node(\"Inference1\").knob(p).setExpression(\"\{\}.\{\}\{\}\".format(this.name(),text,e))"
  addUserKnob {20 Parameters}
  addUserKnob {26 localGPU l "Local GPU:" T ""}
  addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA GeForce RTX 3090"}
@@ -14,8 +13,30 @@ Gizmo {
  addUserKnob {26 ""}
  addUserKnob {4 modelSize l "Model Size" M {Base Large}}
  modelSize Large
- addUserKnob {12 position}
- position {822 621}
+ addUserKnob {20 positive_prompts n 1}
+ addUserKnob {12 prompt1}
+ prompt1 {512 512}
+ addUserKnob {12 prompt2}
+ prompt2 {-200 0}
+ addUserKnob {12 prompt3}
+ prompt3 {-300 0}
+ addUserKnob {12 prompt4}
+ prompt4 {-400 0}
+ addUserKnob {12 prompt5}
+ prompt5 {-500 0}
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {20 negative_prompts n 1}
+ addUserKnob {12 negative1}
+ negative1 {-100 100}
+ addUserKnob {12 negative2}
+ negative2 {-200 100}
+ addUserKnob {12 negative3}
+ negative3 {-300 100}
+ addUserKnob {12 negative4}
+ negative4 {-400 100}
+ addUserKnob {12 negative5}
+ negative5 {-500 100}
+ addUserKnob {20 endGroup_1 n -1}
 }
  Input {
   inputs 0
@@ -23,23 +44,29 @@ Gizmo {
   xpos -148
   ypos 59
  }
-set N8dc6d000 [stack 0]
+set Nbe719400 [stack 0]
  Inference {
   useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all sam_vit_l.cat] *.cat]"
   halfPrecision {{parent.halfPrecision}}
-  serialiseKnob {position:{Group3.position} {Group3.position};}
+  serialiseKnob {p1:{parent.prompt1} {parent.prompt1};p2:{parent.prompt2} {parent.prompt2};p3:{parent.prompt3} {parent.prompt3};
+                p4:{parent.prompt4} {parent.prompt4};p5:{parent.prompt5} {parent.prompt5};
+                n1:{parent.negative1} {parent.negative1};n2:{parent.negative2} {parent.negative2};n3:{parent.negative3} {parent.negative3};
+                n4:{parent.negative4} {parent.negative4};n5:{parent.negative5} {parent.negative5}}
   name Inference2
-  selected true
   xpos -61
   ypos 205
  }
-push $N8dc6d000
+push $Nbe719400
  Inference {
   useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all sam_vit_b.cat] *.cat]"
   halfPrecision {{parent.halfPrecision}}
-  serialiseKnob {position:{Group3.position x1 538} {Group3.position x1 496};}
+  serialiseKnob {p1:{parent.prompt1} {parent.prompt1};p2:{parent.prompt2} {parent.prompt2};p3:{parent.prompt3} {parent.prompt3};
+                p4:{parent.prompt4} {parent.prompt4};p5:{parent.prompt5} {parent.prompt5};
+                n1:{parent.negative1} {parent.negative1};n2:{parent.negative2} {parent.negative2};n3:{parent.negative3} {parent.negative3};
+                n4:{parent.negative4} {parent.negative4};n5:{parent.negative5} {parent.negative5}}
+
   name Inference1
   xpos -242
   ypos 206

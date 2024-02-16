@@ -1,12 +1,14 @@
 import os
+import sys
 import torch
+sys.path.append(os.path.join(os.path.dirname(__file__),"segment-anything"))
 from segment_anything import sam_model_registry , SamPredictor
 from patches import apply_patches
 from sam_predictor_base_model import SamPredictorBaseModel
 import numpy as np
 from PIL import Image
 from torchvision import transforms
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 def show_mask(mask, ax, random_color=False):
     if random_color:
@@ -59,9 +61,10 @@ for variant in ['vit_b', 'vit_l', 'vit_h']:
 
 
     input_point = np.array([500, 375])
-    input_label = np.array([1])
+    input_point2 = np.array([25, 15])
+    input_point3 = np.array([50, 400])
     
-    model = SamPredictorBaseModel(sam_model=base_model,position=torch.from_numpy(input_point))
+    model = SamPredictorBaseModel(variant,modelPath,p1=torch.from_numpy(input_point),p2=torch.from_numpy(input_point2),n1=torch.from_numpy(input_point3))
     model.to(device=device)
     model.eval()
 
@@ -70,9 +73,9 @@ for variant in ['vit_b', 'vit_l', 'vit_h']:
     # Preview the TorchScript model
     mask = model(*example_inputs)
 
-    plt.figure(figsize=(10,10))
-    plt.imshow(mask.cpu().squeeze().numpy().transpose(1,2,0))
-    plt.axis('off')
-    plt.show() 
+    #plt.figure(figsize=(10,10))
+    #plt.imshow(mask.cpu().squeeze().numpy().transpose(1,2,0))
+    #plt.axis('off')
+    #plt.show() 
 
 

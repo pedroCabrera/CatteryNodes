@@ -12,7 +12,7 @@ def createCatModel():
 
     for variant in ['photographic_portrait_matting', 'webcam_portrait_matting']:
         model = "modnet_"+variant+".pt"
-        catFile = "PC_Improved_ModNet/modnet_"+variant+".cat"     
+        catFile = "PC_ModNet/modnet_"+variant+".cat"     
 
         cat_file_creator['torchScriptFile'].setValue(os.path.join(path,model).replace("\\", "/"))
         cat_file_creator['catFile'].setValue(os.path.join(path,catFile).replace("\\", "/"))

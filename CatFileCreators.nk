@@ -175,7 +175,7 @@ Read {
 CatFileCreator {
  inputs 0
  torchScriptFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/ModNet/nuke/modnet_photographic_portrait_matting.pt
- catFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/ModNet/nuke/PC_Improved_ModNet/modnet_photographic_portrait_matting.pt.cat
+ catFile C:/Users/pedro/Desktop/ENVIRONMENTS/CatteryNodes/ModNet/nuke/PC_ModNet/modnet_photographic_portrait_matting.pt.cat
  channelsIn rgba.red,rgba.green,rgba.blue
  channelsOut rgba.red
  modelId modNet

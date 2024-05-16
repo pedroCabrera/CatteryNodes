@@ -14,6 +14,7 @@ Gizmo {
  addUserKnob {4 modelSize l "Model Size" M {Base Large}}
  modelSize Large
  addUserKnob {20 positive_prompts n 1}
+ positive_prompts 0
  addUserKnob {12 prompt1}
  prompt1 {512 512}
  addUserKnob {12 prompt2}
@@ -26,6 +27,7 @@ Gizmo {
  prompt5 {-500 0}
  addUserKnob {20 endGroup n -1}
  addUserKnob {20 negative_prompts n 1}
+ negative_prompts 0
  addUserKnob {12 negative1}
  negative1 {-100 100}
  addUserKnob {12 negative2}
@@ -37,6 +39,13 @@ Gizmo {
  addUserKnob {12 negative5}
  negative5 {-500 100}
  addUserKnob {20 endGroup_1 n -1}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {20 DOC n 1}
+ addUserKnob {26 _3 l "" +STARTLINE T "Move positive and negative prompts to positive values to make them have an effect.\nIf they are negative they will not be taken into account"}
+ addUserKnob {20 endGroup_2 n -1}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 _1 l "" +STARTLINE T "<span><b>Original Model </b> - <a href=\"https://github.com/facebookresearch/segment-anything\" style=\"color:#666;text-decoration: none;\">Segment Anything</a></span>"}
+ addUserKnob {26 _2 l "" +STARTLINE T "<span><b>Ported to cattery by </b> - <a href=\"https://www.linkedin.com/in/pcpedrocabrera/\" style=\"color:#666;text-decoration: none;\">Pedro Cabrera</a></span> \n<span><b>Part of the collection </b> - <a href=\"https://github.com/pedroCabrera/CatteryNodes\" style=\"color:#666;text-decoration: none;\">CatteryNodes</a></span>"}
 }
  Input {
   inputs 0
@@ -44,29 +53,22 @@ Gizmo {
   xpos -148
   ypos 59
  }
-set Nbe719400 [stack 0]
+set N35225800 [stack 0]
  Inference {
   useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all sam_vit_l.cat] *.cat]"
   halfPrecision {{parent.halfPrecision}}
-  serialiseKnob {p1:{parent.prompt1} {parent.prompt1};p2:{parent.prompt2} {parent.prompt2};p3:{parent.prompt3} {parent.prompt3};
-                p4:{parent.prompt4} {parent.prompt4};p5:{parent.prompt5} {parent.prompt5};
-                n1:{parent.negative1} {parent.negative1};n2:{parent.negative2} {parent.negative2};n3:{parent.negative3} {parent.negative3};
-                n4:{parent.negative4} {parent.negative4};n5:{parent.negative5} {parent.negative5}}
+  serialiseKnob {}
   name Inference2
   xpos -61
   ypos 205
  }
-push $Nbe719400
+push $N35225800
  Inference {
   useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all sam_vit_b.cat] *.cat]"
   halfPrecision {{parent.halfPrecision}}
-  serialiseKnob {p1:{parent.prompt1} {parent.prompt1};p2:{parent.prompt2} {parent.prompt2};p3:{parent.prompt3} {parent.prompt3};
-                p4:{parent.prompt4} {parent.prompt4};p5:{parent.prompt5} {parent.prompt5};
-                n1:{parent.negative1} {parent.negative1};n2:{parent.negative2} {parent.negative2};n3:{parent.negative3} {parent.negative3};
-                n4:{parent.negative4} {parent.negative4};n5:{parent.negative5} {parent.negative5}}
-
+  serialiseKnob {p1:{parent.prompt1} 100;p2:{parent.prompt2} -200;p3:{parent.prompt3} -300;p4:-400 -400;p5:{parent.prompt5} -500;n1:-100 -100;n2:{parent.negative2} -200;n3:{parent.negative3} -300;n4:-400 -400;n5:-500 -500;}
   name Inference1
   xpos -242
   ypos 206

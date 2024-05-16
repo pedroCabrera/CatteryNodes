@@ -1,5 +1,3 @@
-#! C:/Program Files/Nuke14.0v5/nuke-14.0.5.dll -nx
-version 14.0 v5
 Gizmo {
  onCreate "import sys\nthis = nuke.thisNode()\ninference = nuke.toNode(f\"\{this.name()\}.Inference1\")\nthis\[\"gpuName\"].setValue(inference\[\"gpuName\"].value())\nthis\[\"channelsIn\"].setValue(\"rgba.red, rgba.green, rgba.blue\")\ninference.forceValidate()\nis_enabled = inference\[\"modelFile\"].enabled()\nif (sys.platform.lower() == \"darwin\") and (not inference\[\"useGPUIfAvailable\"].enabled()): this\[\"useGPUIfAvailable\"].setValue(False), this\[\"useGPUIfAvailable\"].setEnabled(False)\nif not is_enabled:\n    for k in this.knobs(): this\[k].setEnabled(False)\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].enabled())"
  onDestroy "nuke.thisNode()\[\"knobChanged\"].setValue(\"\")"
@@ -14,6 +12,8 @@ Gizmo {
  addUserKnob {26 channelsIn l "Channels In:" T "rgba.red, rgba.green, rgba.blue"}
  addUserKnob {26 ""}
  addUserKnob {26 "" l " "}
+ addUserKnob {26 _1 l "" +STARTLINE T "<span><b>Original Model </b> - <a href=\"https://github.com/cxgincsu/SemanticGuidedHumanMatting\" style=\"color:#666;text-decoration: none;\">Semantic Guided human Matting</a></span>\n"}
+ addUserKnob {26 _2 l "" +STARTLINE T "<span><b>Ported to cattery by </b> - <a href=\"https://www.linkedin.com/in/pcpedrocabrera/\" style=\"color:#666;text-decoration: none;\">Pedro Cabrera</a></span> \n\n<span><b>Part of the collection </b> - <a href=\"https://github.com/pedroCabrera/CatteryNodes\" style=\"color:#666;text-decoration: none;\">CatteryNodes</a></span>"}
 }
  Input {
   inputs 0
@@ -21,8 +21,8 @@ Gizmo {
   xpos -150
   ypos 67
  }
-set Nc05c6000 [stack 0]
-push $Nc05c6000
+set Nb115400 [stack 0]
+push $Nb115400
  Inference {
   useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all SGHM-ResNet50.cat] *.cat]"

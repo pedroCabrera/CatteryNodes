@@ -1,4 +1,3 @@
-version 13.1 v1
 Gizmo {
  onCreate "import sys\nthis = nuke.thisNode()\ninference = nuke.toNode(f\"\{this.name()\}.Inference1\")\nthis\[\"gpuName\"].setValue(inference\[\"gpuName\"].value())\nthis\[\"channelsIn\"].setValue(\"rgba.red, rgba.green, rgba.blue\")\ninference.forceValidate()\nis_enabled = inference\[\"modelFile\"].enabled()\nif (sys.platform.lower() == \"darwin\") and (not inference\[\"useGPUIfAvailable\"].enabled()): this\[\"useGPUIfAvailable\"].setValue(False), this\[\"useGPUIfAvailable\"].setEnabled(False)\nif not is_enabled:\n    for k in this.knobs(): this\[k].setEnabled(False)\nthis\[\"halfPrecision\"].setVisible(this\[\"useGPUIfAvailable\"].enabled())"
  onDestroy "nuke.thisNode()\[\"knobChanged\"].setValue(\"\")"
@@ -14,7 +13,10 @@ Gizmo {
  addUserKnob {26 ""}
  addUserKnob {41 optimize_speed l Fast T Inference1.optimize_speed}
  addUserKnob {41 L l "Ressize Computation" T Inference1.L}
- addUserKnob {26 "" l " "} 
+ addUserKnob {26 "" l " "}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 _1 l "" +STARTLINE T "<span><b>Original Model </b> - <a href=\"https://github.com/hkchengrex/CascadePSP\" style=\"color:#666;text-decoration: none;\">CascadePSP</a></span>"}
+ addUserKnob {26 _2 l "" +STARTLINE T "<span><b>Ported to cattery by </b> - <a href=\"https://www.linkedin.com/in/pcpedrocabrera/\" style=\"color:#666;text-decoration: none;\">Pedro Cabrera</a></span> \n<span><b>Part of the collection </b> - <a href=\"https://github.com/pedroCabrera/CatteryNodes\" style=\"color:#666;text-decoration: none;\">CatteryNodes</a></span>"}
 }
  Input {
   inputs 0
@@ -22,8 +24,8 @@ Gizmo {
   xpos -150
   ypos 67
  }
-set Nf4a2f800 [stack 0]
-push $Nf4a2f800
+set N109e6400 [stack 0]
+push $N109e6400
  Inference {
   useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all cascade_psp.cat] *.cat]"
@@ -32,7 +34,7 @@ push $Nf4a2f800
   name Inference1
   selected true
   xpos -150
-  ypos 254
+  ypos 253
  }
  Output {
   name Output1

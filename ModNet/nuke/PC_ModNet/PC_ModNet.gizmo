@@ -11,6 +11,9 @@ Gizmo {
  addUserKnob {26 ""}
  addUserKnob {26 channelsIn l "Channels In:" T "rgba.red, rgba.green, rgba.blue"}
  addUserKnob {4 model M {photographic webcam ""}}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 _1 l "" +STARTLINE T "<span><b>Original Model </b> - <a href=\"https://github.com/ZHKKKe/MODNet\" style=\"color:#666;text-decoration: none;\">MODNet</a></span>"}
+ addUserKnob {26 _2 l "" +STARTLINE T "<span><b>Ported to cattery by </b> - <a href=\"https://www.linkedin.com/in/pcpedrocabrera/\" style=\"color:#666;text-decoration: none;\">Pedro Cabrera</a></span> \n<span><b>Part of the collection </b> - <a href=\"https://github.com/pedroCabrera/CatteryNodes\" style=\"color:#666;text-decoration: none;\">CatteryNodes</a></span>"}
 }
  Input {
   inputs 0
@@ -39,7 +42,7 @@ Gizmo {
   xpos -237
   ypos -328
  }
-set Nb5e0b400 [stack 0]
+set N491eac00 [stack 0]
  Inference {
   useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all modnet_webcam_portrait_matting.cat] *.cat]"
@@ -49,7 +52,7 @@ set Nb5e0b400 [stack 0]
   xpos -209
   ypos -255
  }
-push $Nb5e0b400
+push $N491eac00
  Inference {
   useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all modnet_photographic_portrait_matting.cat] *.cat]"

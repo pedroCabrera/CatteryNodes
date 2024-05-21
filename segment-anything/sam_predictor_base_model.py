@@ -86,9 +86,6 @@ class SamPredictorBaseModel(nn.Module):
 		input_point[1] = image.shape[2] - input_point[1]
 		point_coords = self.apply_coords_torch(input_point, self.original_size,self.target_length)[None, None, :]
 		input_label = torch.tensor([1]).to(self.device)[None, :]
-		print("old")
-		print(point_coords.shape)
-		print(input_label.shape)
 
 		inputpoints = []
 		inputlables = []
@@ -113,10 +110,6 @@ class SamPredictorBaseModel(nn.Module):
 
 		stacked_points = torch.stack(inputpoints, dim=0).unsqueeze(0)
 		stacked_labels = torch.stack(inputlables, dim=1)
-		print("new")
-		print(stacked_points.shape)
-		print(stacked_labels.shape)
-
 
 		masks, scores, logits = self.predict_torch(
 			point_coords=stacked_points,
